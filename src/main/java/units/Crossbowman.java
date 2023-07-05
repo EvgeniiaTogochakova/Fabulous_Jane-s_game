@@ -10,12 +10,6 @@ public class Crossbowman extends Unit {
         this.arrows = new Random().nextInt(10, 20);
     }
 
-    @Override
-    public String about() {
-        return "Арбалетчик " + name + " жизненных сил: " + currentHp + " количество стрел: " + arrows +
-                " сил для стрельбы: " + attack;
-    }
-
     protected boolean needArrows() {
         if (this.arrows == 0) {
             return true;
@@ -43,6 +37,17 @@ public class Crossbowman extends Unit {
             this.arrows -= 1;
             System.out.println("Арбалетчик " + name + " метко выстрелил из арбалета в " + target.name);
         }
+    }
+
+    @Override
+    public void step() {
+
+    }
+
+    @Override
+    public String getInfo() {
+        return "Арбалетчик " + name + " жизненных сил: " + currentHp + " количество стрел: " + arrows +
+                " сил для стрельбы: " + attack;
     }
 }
 
