@@ -30,12 +30,6 @@ public class Magician extends Unit {
     }
 
     @Override
-    public String about() {
-        return "Маг " + name + " жизненных сил: " + currentHp + " запас маны: " + mana +
-                " сил для ослабления врага: " + attack;
-    }
-
-    @Override
     protected boolean attackAbility() {
         if (this.attack >= 5 && this.mana >=5) return true;
         return false;
@@ -55,5 +49,16 @@ public class Magician extends Unit {
             this.mana -= 5;
             System.out.println("Маг " + name + " навел чары ослабления на: " + target.name);
         }
+    }
+
+    @Override
+    public void step() {
+
+    }
+
+    @Override
+    public String getInfo() {
+        return "Маг " + name + " жизненных сил: " + currentHp + " запас маны: " + mana +
+                " чар для ослабления врага: " + attack;
     }
 }
