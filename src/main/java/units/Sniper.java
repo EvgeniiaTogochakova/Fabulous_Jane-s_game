@@ -9,13 +9,6 @@ public class Sniper extends Crossbowman {
     }
 
     @Override
-    public String about() {
-        return "Снайпер " + name + " жизненных сил: " + currentHp + " количество стрел: " + arrows+
-                " сил для стрельбы: " + attack;
-    }
-
-
-    @Override
     public void toAttack(Unit target) {
         if (needArrows()) {
             System.out.println("Снайпер " + name + " стрелять не может, закончились стрелы");
@@ -30,5 +23,16 @@ public class Sniper extends Crossbowman {
             this.arrows -= 1;
             System.out.println("Снайпер " + name + ", спрятавшись на дереве, неожиданно выстрелил из лука в мишень: " + target.name);
         }
+    }
+
+    @Override
+    public void step() {
+        super.step();
+    }
+
+    @Override
+    public String getInfo() {
+        return "Снайпер " + name + " жизненных сил: " + currentHp + " количество стрел: " + arrows+
+                " сил для стрельбы: " + attack;
     }
 }
