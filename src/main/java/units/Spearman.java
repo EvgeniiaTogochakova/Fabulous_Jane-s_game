@@ -7,7 +7,13 @@ public class Spearman extends Unit {
     }
 
     @Override
-    public String about() {
+    public void step() {
+
+    }
+
+    @Override
+    public String getInfo() {
         return "Копейщик " + name + " жизненных сил: " + currentHp + " сил для удара копьем: " + attack;
     }
+
 }
