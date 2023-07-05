@@ -10,10 +10,6 @@ public class Peasant extends Unit {
         this.arrows = new Random().nextInt(40, 50);
     }
 
-    @Override
-    public String about() {
-        return "Крестьянин " + name + " жизненных сил: " + currentHp + " количество стрел: " + arrows;
-    }
 
     private boolean hasArrows() {
         if (this.arrows > 0) {
@@ -42,6 +38,16 @@ public class Peasant extends Unit {
     @Deprecated
     public void toAttack(Unit target) {}
 
+
+    @Override
+    public void step() {
+
+    }
+
+    @Override
+    public String getInfo() {
+        return "Крестьянин " + name + " жизненных сил: " + currentHp + " количество стрел: " + arrows;
+    }
 }
 
 
