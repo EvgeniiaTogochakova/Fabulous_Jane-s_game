@@ -3,7 +3,7 @@ package units;
 import java.util.EnumMap;
 import java.util.Random;
 
-public abstract class Unit {
+public abstract class Unit implements GameInterface{
     protected static int id = 1;
     protected String name;
     protected float maxHp, currentHp;
@@ -30,9 +30,6 @@ public abstract class Unit {
         ++id;
     }
 
-    public String about() {
-        return name + " жизненных сил: " + currentHp;
-    }
 
 
     protected static String getName() {
@@ -68,6 +65,11 @@ public abstract class Unit {
         }
     }
     protected void die() {
+    }
+
+    @Override
+    public String getInfo() {
+        return name + " жизненных сил: " + currentHp;
     }
 
 }
