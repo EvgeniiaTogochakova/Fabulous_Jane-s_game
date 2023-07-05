@@ -33,12 +33,6 @@ public class Monk extends Unit {
     }
 
     @Override
-    public String about() {
-        return "Монах " + name + " жизненных сил: " + currentHp + " запас эликсира: " + elixir +
-                " запас яда: " + poison + " сил для выброса яда: " + attack;
-    }
-
-    @Override
     protected boolean attackAbility() {
         if (this.attack >= 5 && this.poison >=5) return true;
         return false;
@@ -58,5 +52,17 @@ public class Monk extends Unit {
             this.poison -= 5;
             System.out.println("Монах " + name + " успешно распылил яд в лицо врага: " + target.name);
         }
+    }
+
+
+    @Override
+    public void step() {
+
+    }
+
+    @Override
+    public String getInfo() {
+        return "Монах " + name + " жизненных сил: " + currentHp + " запас эликсира: " + elixir +
+                " запас яда: " + poison + " сил для распыления яда: " + attack;
     }
 }
