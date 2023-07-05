@@ -6,7 +6,12 @@ public class Robber extends Spearman{
     }
 
     @Override
-    public String about() {
+    public void step() {
+        super.step();
+    }
+
+    @Override
+    public String getInfo() {
         return "Разбойник " + name + " жизненных сил: " + currentHp + " сил для атаки: " + attack;
     }
 }
