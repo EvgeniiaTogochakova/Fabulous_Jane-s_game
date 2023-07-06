@@ -1,13 +1,16 @@
 package units;
 
+import java.util.ArrayList;
+
 public class Robber extends Spearman{
-    public Robber() {
-        super();
+    public Robber(int x, int y) {
+        super(x,y);
     }
 
     @Override
-    public void step() {
-        super.step();
+    public void step(ArrayList<Unit> heroes) {
+        Unit closestVictim = findClosestEnemy(heroes);
+        System.out.println(closestVictim.name + " " + this.coordinates.distanceСalculation(closestVictim.coordinates));
     }
 
     @Override
