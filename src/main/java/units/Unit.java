@@ -1,5 +1,6 @@
 package units;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Random;
 
@@ -9,8 +10,9 @@ public abstract class Unit implements GameInterface{
     protected float maxHp, currentHp;
     protected int attack, defense;
     protected int[] damage;
+    Coordinates coordinates;
 
-    public Unit(float maxHp, float currentHp, int attack, int defense, int[] damage) {
+    public Unit(float maxHp, float currentHp, int attack, int defense, int[] damage, int x, int y) {
         this.name = getName();
         this.maxHp = maxHp;
         this.currentHp = currentHp;
@@ -18,16 +20,18 @@ public abstract class Unit implements GameInterface{
         this.defense = defense;
         this.damage = damage;
         ++id;
+        coordinates = new Coordinates(x,y);
 
     }
 
-    public Unit(float maxHp, float currentHp, int defense, int[] damage) {
+    public Unit(float maxHp, float currentHp, int defense, int[] damage, int x, int y) {
         this.name = getName();
         this.maxHp = maxHp;
         this.currentHp = currentHp;
         this.defense = defense;
         this.damage = damage;
         ++id;
+        coordinates = new Coordinates(x, y);
     }
 
 
@@ -72,4 +76,15 @@ public abstract class Unit implements GameInterface{
         return name + " жизненных сил: " + currentHp;
     }
 
+    public Unit findClosestEnemy(ArrayList<Unit> enemies){
+        double closestDistance = Double.MAX_VALUE;
+        Unit closestEnemy = null;
+        for (int i = 0; i < enemies.size(); i++) {
+            if (this.coordinates.distanceСalculation(enemies.get(i).coordinates) < closestDistance) {
+                closestDistance = this.coordinates.distanceСalculation(enemies.get(i).coordinates);
+                closestEnemy = enemies.get(i);
+            }
+        }
+        return closestEnemy;
+    }
 }
