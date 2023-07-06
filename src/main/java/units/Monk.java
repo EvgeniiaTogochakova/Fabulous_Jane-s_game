@@ -1,13 +1,14 @@
 package units;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Monk extends Unit {
     int elixir;
     int poison;
 
-    public Monk() {
-        super(100, 50, 25,25, new int[]{5, 10, 15});
+    public Monk(int x, int y) {
+        super(100, 50, 25,25, new int[]{5, 10, 15},x,y);
         this.elixir = new Random().nextInt(30, 50);
         this.poison = new Random().nextInt(30, 50);
     }
@@ -56,8 +57,9 @@ public class Monk extends Unit {
 
 
     @Override
-    public void step() {
-
+    public void step(ArrayList<Unit> heroes) {
+        Unit closestVictim = findClosestEnemy(heroes);
+        System.out.println(closestVictim.name + " " + this.coordinates.distanceСalculation(closestVictim.coordinates));
     }
 
     @Override
