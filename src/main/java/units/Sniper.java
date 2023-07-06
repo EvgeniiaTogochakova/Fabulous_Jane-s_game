@@ -1,11 +1,12 @@
 package units;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Sniper extends Crossbowman {
 
-    public Sniper() {
-        super();
+    public Sniper(int x, int y) {
+        super(x,y);
     }
 
     @Override
@@ -26,8 +27,9 @@ public class Sniper extends Crossbowman {
     }
 
     @Override
-    public void step() {
-        super.step();
+    public void step(ArrayList<Unit> heroes) {
+        Unit closestVictim = findClosestEnemy(heroes);
+        System.out.println(closestVictim.name + " " + this.coordinates.distanceСalculation(closestVictim.coordinates));
     }
 
     @Override
