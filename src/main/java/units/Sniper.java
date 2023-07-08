@@ -10,26 +10,29 @@ public class Sniper extends Crossbowman {
     }
 
     @Override
-    public void toAttack(Unit target) {
-        if (needArrows()) {
-            System.out.println("Снайпер " + name + " стрелять не может, закончились стрелы");
+    public void step(ArrayList<Unit> heroes, ArrayList<Unit> myOwnTeam) {
+        Unit closestVictim = findClosestEnemy(heroes);
+        System.out.println(closestVictim.name + " " + this.coordinates.distanceСalculation(closestVictim.coordinates));
+        if (currentHp <= 0.1) {
+            System.out.println("Снайпер " + name + " уже не живой!");
+            return;
         }
         if (this.attack < 5) {
             System.out.println("Снайпер " + name + " уже исчерпал свои атакующие силы!");
+            return;
         }
-
-        if (attackAbility()) {
-            target.getDamage();
-            this.attack -= 5;
-            this.arrows -= 1;
-            System.out.println("Снайпер " + name + ", спрятавшись на дереве, неожиданно выстрелил из лука в мишень: " + target.name);
+        if (needArrows()) {
+            System.out.println("Снайпер " + name + " стрелять не может, закончились стрелы");
+            return;
         }
-    }
-
-    @Override
-    public void step(ArrayList<Unit> heroes) {
-        Unit closestVictim = findClosestEnemy(heroes);
-        System.out.println(closestVictim.name + " " + this.coordinates.distanceСalculation(closestVictim.coordinates));
+        Unit enemyTarget = findClosestEnemy(heroes);
+        System.out.println("Снайпер " + name + " , спрятавшись на дереве, неожиданно выстрелил из лука в мишень: " + enemyTarget.name);
+        toAttack(enemyTarget);
+        System.out.println();
+        if (myOwnTeam.contains(Peasant.class)) {
+            return;
+        }
+        this.arrows--;
     }
 
     @Override
