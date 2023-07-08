@@ -41,7 +41,7 @@ public class Peasant extends Unit {
 
 
     @Override
-    public void step(ArrayList<Unit> heroes) {
+    public void step(ArrayList<Unit> heroes, ArrayList<Unit> myOwnTeam) {
         Unit closestVictim = findClosestEnemy(heroes);
         System.out.println(closestVictim.name + " " + this.coordinates.distanceСalculation(closestVictim.coordinates));
     }
