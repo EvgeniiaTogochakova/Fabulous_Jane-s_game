@@ -8,7 +8,8 @@ public abstract class Unit implements GameInterface{
     protected static int id = 1;
     protected String name;
     protected float maxHp, currentHp;
-    protected int attack, defense;
+    public int attack;
+    protected int defense;
     protected int[] damage;
     Coordinates coordinates;
 
@@ -48,9 +49,21 @@ public abstract class Unit implements GameInterface{
     public void getDamage() {
         int indexDamage = new Random().nextInt(this.damage.length);
         int realDamage = damage[indexDamage]- (int) (this.defense * 0.2);
-        if (this.currentHp - realDamage > 0) {
+        if (this.currentHp - realDamage > 0.1) {
             this.currentHp -= realDamage;
         } else {
+            die();
+        }
+    }
+
+    public void getDamageByArcher(){
+        int averageDamage = 0;
+        for (int i = 0; i < this.damage.length; i++) {
+            averageDamage+=damage[i];
+;       }
+        averageDamage = averageDamage/this.damage.length;
+        currentHp -= averageDamage;
+        if (this.currentHp <= 0.1) {
             die();
         }
     }
@@ -86,5 +99,10 @@ public abstract class Unit implements GameInterface{
             }
         }
         return closestEnemy;
+    }
+
+    public boolean isDead(){
+        if (this.currentHp <= 0.1) return true;
+        return false;
     }
 }
