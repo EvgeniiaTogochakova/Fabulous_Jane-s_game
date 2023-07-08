@@ -6,7 +6,7 @@ public class Magician extends Unit {
     int mana;
 
     public Magician(int x, int y) {
-        super(100, 50, 25, 25, new int[]{5, 10, 15},x,y);
+        super(100, 50, new Random().nextInt(25,101), 25, new int[]{5, 10, 15},x,y);
         this.mana = new Random().nextInt(50, 100);
     }
 
@@ -53,7 +53,7 @@ public class Magician extends Unit {
     }
 
     @Override
-    public void step(ArrayList<Unit> heroes) {
+    public void step(ArrayList<Unit> heroes, ArrayList<Unit> myOwnTeam) {
         Unit closestVictim = findClosestEnemy(heroes);
         System.out.println(closestVictim.name + " " + this.coordinates.distanceСalculation(closestVictim.coordinates));
     }
