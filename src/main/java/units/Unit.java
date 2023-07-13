@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Random;
 
-public abstract class Unit implements GameInterface{
+public abstract class Unit implements GameInterface {
     protected static int id = 1;
     protected String name;
-    protected float maxHp, currentHp;
+    protected float maxHp;
+    protected float currentHp;
     public int attack;
     protected int defense;
     protected int[] damage;
@@ -21,7 +22,7 @@ public abstract class Unit implements GameInterface{
         this.defense = defense;
         this.damage = damage;
         ++id;
-        coordinates = new Coordinates(x,y);
+        coordinates = new Coordinates(x, y);
 
     }
 
@@ -36,7 +37,6 @@ public abstract class Unit implements GameInterface{
     }
 
 
-
     protected static String getName() {
         String str = String.valueOf(ListNames.values()[new Random().nextInt(ListNames.values().length)]) + id;
         return str;
@@ -48,22 +48,24 @@ public abstract class Unit implements GameInterface{
 
     public void getDamage() {
         int indexDamage = new Random().nextInt(this.damage.length);
-        int realDamage = damage[indexDamage]- (int) (this.defense * 0.2);
-        if (this.currentHp - realDamage > 0.1) {
+        int realDamage = damage[indexDamage] - (int) (this.defense * 0.2);
+        if (this.currentHp - realDamage > 0) {
             this.currentHp -= realDamage;
         } else {
+            this.currentHp = 0;
             die();
         }
     }
 
-    public void getDamageByArcher(){
+    public void getDamageByArcher() {
         int averageDamage = 0;
         for (int i = 0; i < this.damage.length; i++) {
-            averageDamage+=damage[i];
-;       }
-        averageDamage = averageDamage/this.damage.length;
-        currentHp -= averageDamage;
-        if (this.currentHp <= 0.1) {
+            averageDamage += damage[i];
+        }
+        averageDamage = averageDamage / this.damage.length;
+        this.currentHp -= averageDamage;
+        if (this.currentHp <= 0) {
+            this.currentHp = 0;
             die();
         }
     }
@@ -72,15 +74,17 @@ public abstract class Unit implements GameInterface{
         if (this.attack >= 5) return true;
         return false;
     }
+
     public void toAttack(Unit target) {
         if (attackAbility()) {
             target.getDamage();
             this.attack -= 5;
             System.out.println(name + " атаковал " + target.name);
-        }else{
-            System.out.println(name+ " уже исчерпал свои атакующие силы!");
+        } else {
+            System.out.println(name + " уже исчерпал свои атакующие силы!");
         }
     }
+
     protected void die() {
     }
 
@@ -89,7 +93,7 @@ public abstract class Unit implements GameInterface{
         return name + " жизненных сил: " + currentHp;
     }
 
-    public Unit findClosestEnemy(ArrayList<Unit> enemies){
+    public Unit findClosestEnemy(ArrayList<Unit> enemies) {
         double closestDistance = Double.MAX_VALUE;
         Unit closestEnemy = null;
         for (int i = 0; i < enemies.size(); i++) {
@@ -101,8 +105,24 @@ public abstract class Unit implements GameInterface{
         return closestEnemy;
     }
 
-    public boolean isDead(){
-        if (this.currentHp <= 0.1) return true;
+    public boolean isDead() {
+        if (this.currentHp == 0.1) return true;
         return false;
     }
+
+    public String state = "Stand";
+
+    public int[] getCoordinates() {
+        return new int[]{coordinates.x, coordinates.y};
+    }
+
+    public float getHp() {
+        return currentHp;
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
+
 }
