@@ -1,13 +1,14 @@
 package units;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Peasant extends Unit {
     int arrows;
 
     public Peasant(int x, int y) {
-        super(100, 50, 30, new int[]{5, 10, 15},x,y);
+        super(100, 50, 30, new int[]{5, 10, 15}, x, y);
         this.arrows = new Random().nextInt(40, 50);
     }
 
@@ -19,7 +20,7 @@ public class Peasant extends Unit {
         return false;
     }
 
-    public void givesArrows(Crossbowman archer){
+    public void givesArrows(Crossbowman archer) {
         if (archer.needArrows()) {
             System.out.println(archer.name + " просит стрелы");
         }
@@ -37,19 +38,28 @@ public class Peasant extends Unit {
     }
 
     @Deprecated
-    public void toAttack(Unit target) {}
+    public void toAttack(Unit target) {
+    }
 
 
     @Override
     public void step(ArrayList<Unit> heroes, ArrayList<Unit> myOwnTeam) {
-        Unit closestVictim = findClosestEnemy(heroes);
-        System.out.println(closestVictim.name + " " + this.coordinates.distanceСalculation(closestVictim.coordinates));
+        if (this.currentHp > 0) {
+            System.out.print("Крестьянин " + this.name + " жив... ");
+            if (state == "Busy") {
+                state = "Stand";
+                System.out.println("Крестьянин " + this.name + " изменил флаг с Busy на Stand");
+            }
+        }
+        if (this.currentHp == 0) System.out.println("Крестьянин " + this.name + " мертв");
     }
+
 
     @Override
     public String getInfo() {
-        return "Крестьянин " + name + " жизненных сил: " + currentHp + " количество стрел: " + arrows;
+        return "Крестьянин " + name + " hit points: " + currentHp + " стрел: " + arrows + " P:" + Arrays.toString(getCoordinates());
     }
+
 }
 
 
