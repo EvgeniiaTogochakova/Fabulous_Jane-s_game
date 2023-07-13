@@ -1,6 +1,7 @@
 package units;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Robber extends Spearman{
     public Robber(int x, int y) {
@@ -15,6 +16,6 @@ public class Robber extends Spearman{
 
     @Override
     public String getInfo() {
-        return "Разбойник " + name + " жизненных сил: " + currentHp + " сил для атаки: " + attack;
+        return "Разбойник " + name + " hit points: " + currentHp + " сил для атаки: " + attack + " R:" + Arrays.toString(getCoordinates());
     }
 }
