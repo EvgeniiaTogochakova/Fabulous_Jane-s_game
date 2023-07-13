@@ -1,6 +1,7 @@
 package units;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Crossbowman extends Unit {
@@ -22,16 +23,14 @@ public class Crossbowman extends Unit {
     @Override
     public void toAttack(Unit target) {
         this.attack -= 5;
-        System.out.println("Атакующих сил у "+ name + " стало меньше, теперь "+ attack);
         target.getDamageByArcher();
-        System.out.println("У жертвы " + target.name + " в результате атаки уровень жизненных сил понизился до " + target.currentHp );
     }
 
     @Override
     public void step(ArrayList<Unit> heroes, ArrayList<Unit> myOwnTeam) {
         Unit closestVictim = findClosestEnemy(heroes);
         System.out.println(closestVictim.name + " " + this.coordinates.distanceСalculation(closestVictim.coordinates));
-        if (currentHp <= 0.1) {
+        if (currentHp == 0) {
             System.out.println("Арбалетчик " + name + " уже не живой!");
             return;
         }
@@ -44,11 +43,17 @@ public class Crossbowman extends Unit {
             return;
         }
         Unit enemyTarget = findClosestEnemy(heroes);
-        System.out.println("Арбалетчик " + name + " метко выстрелил из арбалета в " + enemyTarget.name);
+        System.out.println("Арбалетчик " + name + " метко выстрелил в " + enemyTarget.name);
         toAttack(enemyTarget);
         System.out.println();
-        if (myOwnTeam.contains(Peasant.class)) {
-            return;
+        for (var unit : myOwnTeam) {
+            if (unit instanceof Peasant && unit.currentHp > 0 && unit.state == "Stand") {
+                unit.state = "Busy";
+                ((Peasant) unit).arrows--;
+                System.out.print("Арбалетчик " + this.name + " благодарит за стрелу крестьянина " + unit.name);
+                System.out.println(". " + unit.name + " становится Busy");
+                break;
+            }
         }
         this.arrows--;
     }
@@ -56,8 +61,8 @@ public class Crossbowman extends Unit {
 
     @Override
     public String getInfo() {
-        return "Арбалетчик " + name + " жизненных сил: " + currentHp + " количество стрел: " + arrows +
-                " сил для стрельбы: " + attack;
+        return "Арбалетчик " + name + " hit points: " + currentHp + " стрел: " + arrows +
+                " сил стрелять: " + attack + " C:" + Arrays.toString(getCoordinates());
     }
 }
 
