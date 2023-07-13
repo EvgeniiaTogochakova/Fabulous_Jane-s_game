@@ -1,6 +1,7 @@
 package units;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Spearman extends Unit {
@@ -17,7 +18,7 @@ public class Spearman extends Unit {
 
     @Override
     public String getInfo() {
-        return "Копейщик " + name + " жизненных сил: " + currentHp + " сил для удара копьем: " + attack;
+        return "Копейщик " + name + " hit points: " + currentHp + " сил для удара : " + attack + " S:" + Arrays.toString(getCoordinates());
     }
 
 }
