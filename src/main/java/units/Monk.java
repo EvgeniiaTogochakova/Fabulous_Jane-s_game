@@ -9,9 +9,9 @@ public class Monk extends Unit {
     int poison;
 
     public Monk(int x, int y) {
-        super(100, 50, new Random().nextInt(25, 101), 25, new int[]{5, 10, 15}, x, y);
-        this.elixir = new Random().nextInt(30, 50);
-        this.poison = new Random().nextInt(30, 50);
+        super(25, 20, new Random().nextInt(25, 101), 5, new int[]{5, 10, 15}, x, y);
+        this.elixir = new Random().nextInt(20, 30);
+        this.poison = new Random().nextInt(20, 30);
     }
 
     private boolean healingAbility() {
@@ -20,86 +20,84 @@ public class Monk extends Unit {
     }
 
     public void healing(Unit patient) {
-        if (!healingAbility()) {
-            System.out.println(name + " уже растратил свой эликсир!");
+        if (healingAbility() && patient.currentHp < 15 && patient.currentHp > 0) {
+            this.elixir -= 5;
+            patient.currentHp += 5;
         }
-        if (patient.currentHp >= 50) {
-            System.out.println(patient.name + " можно пока не лечить, жизненных сил у него на среднем уровне");
-        }
-        if (healingAbility() && patient.currentHp < 50) {
-            int portion = (int) (this.elixir * 0.2);
-            patient.currentHp += portion;
-            this.elixir -= portion;
-            System.out.println("Монах " + name + " полечил эликсиром " + patient.name);
-        }
-    }
-
-    @Override
-    protected boolean attackAbility() {
-        if (this.attack >= 5 && this.poison >= 5) return true;
-        return false;
-    }
-
-    @Override
-    public void toAttack(Unit target) {
-        if (this.attack < 5) {
-            System.out.println("У " + name + " уже не осталось сил для распыления яда");
-        }
-        if (this.poison < 5) {
-            System.out.println("У " + name + " уже не осталось яда для распыления");
-        }
-        if (attackAbility()) {
-            target.getDamage();
-            this.attack -= 5;
-            this.poison -= 5;
-            System.out.println("Монах " + name + " успешно распылил яд в лицо врага: " + target.name);
-        }
+        if (this.elixir < 0) this.elixir = 0;
     }
 
 
     @Override
     public void step(ArrayList<Unit> heroes, ArrayList<Unit> myOwnTeam) {
-        if (this.currentHp > 0) {
-            System.out.print("Монах " + this.name + " жив...");
-            int digit = new Random().nextInt(2);
-            switch (digit) {
-                case 0 -> {
-                    Unit closestVictim = findClosestEnemy(heroes);
-                    System.out.println(closestVictim.name + " " + this.coordinates.distanceСalculation(closestVictim.coordinates));
-                    toAttack(closestVictim);
+        if (this.currentHp == 0) return;
+        int digit = new Random().nextInt(2);
+        switch (digit) {
+            case 0 -> {
+                if (this.poison <5) return;
+                ArrayList<Unit> liveOpponents = new ArrayList<>();
+                for (var opponent : heroes) {
+                    if (opponent.currentHp > 0) {
+                        liveOpponents.add(opponent);
+                    }
                 }
-                case 1 -> {
-                    float minHp = 100;
-                    for (var unit : myOwnTeam) {
-                        if (unit.currentHp < minHp) {
-                            minHp = unit.currentHp;
+                if (liveOpponents.size() == 0) return;
+                Unit closestVictim = findClosestEnemy(liveOpponents);
+//                    System.out.println(closestVictim.name + " " + this.coordinates.distanceСalculation(closestVictim.coordinates));
+                toAttack(closestVictim);
+                this.poison -= 5;
+                state = "Attack";
+                if (this.poison < 0) this.poison = 0;
+            }
+            case 1 -> {
+                if (!healingAbility()) return;
+                ArrayList<Unit> liveTeammates = new ArrayList<>();
+                for (var ally : myOwnTeam) {
+                    if (ally.currentHp > 0) liveTeammates.add(ally);
+                }
+                if (liveTeammates.size() == 0) return;
+
+                float minHp = 25;
+                for (var unit : liveTeammates) {
+                    if (unit.currentHp < minHp) {
+                        minHp = unit.currentHp;
+                    }
+                }
+                if (minHp >= 15 & this.poison>=5) {//если соратников пока лечить не нужно, монах, как и маг, умеет атаковать врагов
+                    ArrayList<Unit> liveOpponents = new ArrayList<>();
+                    for (var opponent : heroes) {
+                        if (opponent.currentHp > 0) {
+                            liveOpponents.add(opponent);
                         }
                     }
-                    if (minHp >= 50) {
-                        System.out.println("Монах " + this.name + " хотел было полечить, но соратники пока более-менее держатся, надо им помочь в атаке");
-                        Unit closestVictim = findClosestEnemy(heroes);
-                        System.out.println(closestVictim.name + " " + this.coordinates.distanceСalculation(closestVictim.coordinates));
-                        toAttack(closestVictim);
-                        return;
-                    }
-                    for (var unit : myOwnTeam) {
-                        if (unit.currentHp == minHp) {
-                            healing(unit);
-                            break;
-                        }
+                    if (liveOpponents.size() == 0) return;
+                    Unit closestVictim = findClosestEnemy(liveOpponents);
+                    toAttack(closestVictim);
+                    this.poison -= 5;
+                    state = "Attack";
+                    if (this.poison < 0) this.poison = 0;
+                    return;
+                }
+
+                for (var unit : liveTeammates) {
+                    if (unit.currentHp == minHp) {
+                        healing(unit);
+                        state = "Treated";
+                        break;
                     }
                 }
             }
-        } else {
-            System.out.println("Монах " + this.name + " мертв...");
         }
+
     }
+
+
 
 
     @Override
     public String getInfo() {
-        return "Монах " + name + " hit points: " + currentHp + " эликсира: " + elixir +
-                " яда: " + poison + " сил травить: " + attack + " O:" + Arrays.toString(getCoordinates());
+        return "Монах " + name + " hp: " + currentHp + " elixir: " + elixir +
+                " poison: " + poison + " initiative: " + attack + " O:" + Arrays.toString(getCoordinates()) + " " + state;
     }
 
     @Override
