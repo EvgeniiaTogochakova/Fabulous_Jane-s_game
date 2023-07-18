@@ -12,7 +12,7 @@ public abstract class Unit implements GameInterface {
     public int attack;
     protected int defense;
     protected int[] damage;
-    Coordinates coordinates;
+    public Coordinates coordinates;
 
     public Unit(float maxHp, float currentHp, int attack, int defense, int[] damage, int x, int y) {
         this.name = getName();
@@ -42,9 +42,7 @@ public abstract class Unit implements GameInterface {
         return str;
     }
 
-    public void healed(int Hp) {
-        this.currentHp = Math.min(Hp + this.currentHp, this.maxHp);
-    }
+//    public void healed(int Hp) {this.currentHp = Math.min(Hp + this.currentHp, this.maxHp);}
 
     public void getDamage() {
         int indexDamage = new Random().nextInt(this.damage.length);
@@ -53,7 +51,8 @@ public abstract class Unit implements GameInterface {
             this.currentHp -= realDamage;
         } else {
             this.currentHp = 0;
-            die();
+            state = "Dead";
+//            die();
         }
     }
 
@@ -66,27 +65,17 @@ public abstract class Unit implements GameInterface {
         this.currentHp -= averageDamage;
         if (this.currentHp <= 0) {
             this.currentHp = 0;
-            die();
+            state = "Dead";
+//            die();
         }
-    }
-
-    protected boolean attackAbility() {
-        if (this.attack >= 5) return true;
-        return false;
     }
 
     public void toAttack(Unit target) {
-        if (attackAbility()) {
-            target.getDamage();
-            this.attack -= 5;
-            System.out.println(name + " атаковал " + target.name);
-        } else {
-            System.out.println(name + " уже исчерпал свои атакующие силы!");
-        }
+        target.getDamage();
+
     }
 
-    protected void die() {
-    }
+//    protected void die() {}
 
     @Override
     public String getInfo() {
@@ -105,10 +94,6 @@ public abstract class Unit implements GameInterface {
         return closestEnemy;
     }
 
-    public boolean isDead() {
-        if (this.currentHp == 0.1) return true;
-        return false;
-    }
 
     public String state = "Stand";
 
@@ -123,6 +108,12 @@ public abstract class Unit implements GameInterface {
     @Override
     public String toString() {
         return this.getClass().getSimpleName();
+    }
+
+    public void move(Coordinates targetEnemy, ArrayList<Unit> myOwnTeam){
+        if (!coordinates.containsByPosition(coordinates.newPosition(targetEnemy), myOwnTeam)){
+            coordinates = coordinates.newPosition(targetEnemy);
+        }
     }
 
 }
