@@ -8,8 +8,8 @@ public class Magician extends Unit {
     int mana;
 
     public Magician(int x, int y) {
-        super(100, 50, new Random().nextInt(25, 101), 25, new int[]{5, 10, 15}, x, y);
-        this.mana = new Random().nextInt(50, 100);
+        super(25, 20, new Random().nextInt(25, 101), 5, new int[]{5, 10, 15}, x, y);
+        this.mana = new Random().nextInt(40, 50);
     }
 
     private boolean healingAbility() {
@@ -18,84 +18,91 @@ public class Magician extends Unit {
     }
 
     public void healing(Unit patient) {
-        if (!healingAbility()) {
-            System.out.println(name + " уже растратил свою ману!");
-        }
-        if (patient.currentHp >= 50) {
-            System.out.println(patient.name + " можно пока не лечить, жизненных сил у него на среднем уровне");
-        }
-        if (healingAbility() && patient.currentHp < 50) {
-            int portionMana = (int) (this.mana * 0.2);
-            patient.currentHp += portionMana;
-            this.mana -= portionMana;
-            System.out.println(name + " полечил маной " + patient.name);
-        }
-    }
-
-    @Override
-    protected boolean attackAbility() {
-        if (this.attack >= 5 && this.mana >= 5) return true;
-        return false;
-    }
-
-    @Override
-    public void toAttack(Unit target) {
-        if (this.attack < 5) {
-            System.out.println("У " + name + " уже не осталось сил для черной магии");
-        }
-        if (this.mana < 5) {
-            System.out.println("У " + name + " уже не осталось маны, чтобы заколдовать врага");
-        }
-        if (attackAbility()) {
-            target.getDamage();
-            this.attack -= 5;
+        if (healingAbility() && patient.currentHp < 15 && patient.currentHp > 0) {
             this.mana -= 5;
-            System.out.println("Маг " + name + " навел чары ослабления на: " + target.name);
+            patient.currentHp += 5;
         }
+        if (this.mana < 0) this.mana = 0;
     }
 
     @Override
     public void step(ArrayList<Unit> heroes, ArrayList<Unit> myOwnTeam) {
-        if (this.currentHp > 0) {
-            System.out.print("Маг " + this.name + " жив...");
-            int digit = new Random().nextInt(2);
-            switch (digit) {
-                case 0 -> {
-                    Unit closestVictim = findClosestEnemy(heroes);
-                    System.out.println(closestVictim.name + " " + this.coordinates.distanceСalculation(closestVictim.coordinates));
-                    toAttack(closestVictim);
+        if (this.currentHp == 0) return;
+        int digit = new Random().nextInt(2);
+        switch (digit) {
+            case 0 -> {
+                if (this.mana <5) return;
+                ArrayList<Unit> liveOpponents = new ArrayList<>();
+                for (var opponent : heroes) {
+                    if (opponent.currentHp > 0) {
+                        liveOpponents.add(opponent);
+                    }
                 }
-                case 1 -> {
-                    float minHp = 100;
-                    for (var unit : myOwnTeam) {
-                        if (unit.currentHp < minHp) {
-                            minHp = unit.currentHp;
+                if (liveOpponents.size() == 0) return;
+                Unit closestVictim = findClosestEnemy(liveOpponents);
+//                    System.out.println(closestVictim.name + " " + this.coordinates.distanceСalculation(closestVictim.coordinates));
+                toAttack(closestVictim);
+                this.mana -= 5;
+                state = "Attack";
+                if (this.mana < 0) this.mana = 0;
+            }
+            case 1 -> {
+                if (!healingAbility()) return;
+                ArrayList<Unit> deadTeammates = new ArrayList<>();
+                ArrayList<Unit> liveTeammates = new ArrayList<>();
+                for (var ally : myOwnTeam) {
+                    if (ally.currentHp == 0) deadTeammates.add(ally);
+                    if (ally.currentHp > 0) liveTeammates.add(ally);
+                }//вот тут сначала должен выявить умерших, если пало больше половины, взять первого по списку и лечить.
+                //В ином случае просто лечить по-честному, у кого хуже ситуация.
+                if (liveTeammates.size() == 0) return;
+                if (deadTeammates.size() > liveTeammates.size() && this.mana >= 20) {
+                    deadTeammates.get(0).currentHp = 15;
+                    deadTeammates.get(0).state = "Stand";
+                    this.mana = 0;
+                    this.state = "Resurrected";
+                    return;
+                }
+
+                float minHp = 25;
+                for (var unit : liveTeammates) {
+                    if (unit.currentHp < minHp) {
+                        minHp = unit.currentHp;
+                    }
+                }
+                if (minHp >= 15) {//Если маг хотел полечить, а соратникам лечение пока не показано, маг помогает им в атаке
+                    ArrayList<Unit> liveOpponents = new ArrayList<>();
+                    for (var opponent : heroes) {
+                        if (opponent.currentHp > 0) {
+                            liveOpponents.add(opponent);
                         }
                     }
-                    if (minHp >= 50) {
-                        System.out.println("Маг " + this.name + " хотел было полечить, но соратники пока более-менее держатся, надо им помочь в атаке");
-                        Unit closestVictim = findClosestEnemy(heroes);
-                        System.out.println(closestVictim.name + " " + this.coordinates.distanceСalculation(closestVictim.coordinates));
-                        toAttack(closestVictim);
-                        return;
-                    }
-                    for (var unit : myOwnTeam) {
-                        if (unit.currentHp == minHp) {
-                            healing(unit);
-                            break;
-                        }
+                    if (liveOpponents.size() == 0) return;
+                    Unit closestVictim = findClosestEnemy(liveOpponents);
+                    toAttack(closestVictim);
+                    this.mana -= 5;
+                    state = "Attack";
+                    if (this.mana < 0) this.mana = 0;
+                    return;
+                }
+
+                for (var unit : liveTeammates) {
+                    if (unit.currentHp == minHp) {
+                        healing(unit);
+                        state = "Treated";
+                        break;
                     }
                 }
             }
-        } else {
-            System.out.println(("Маг " + this.name + " мертв..."));
         }
+
     }
+
 
 
     @Override
     public String getInfo() {
-        return "Маг " + name + " hit points: " + currentHp + " запас маны: " + mana +
-                " черной магии: " + attack + " М:" + Arrays.toString(getCoordinates());
+        return "Маг " + name + " hp: " + currentHp + " mana: " + mana +
+                " initiative: " + attack + " М:" + Arrays.toString(getCoordinates()) + " " + state;
     }
 }
