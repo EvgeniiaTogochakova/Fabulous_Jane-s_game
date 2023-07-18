@@ -8,14 +8,9 @@ public class Robber extends Spearman{
         super(x,y);
     }
 
-    @Override
-    public void step(ArrayList<Unit> heroes,ArrayList<Unit> myOwnTeam) {
-        Unit closestVictim = findClosestEnemy(heroes);
-        System.out.println(closestVictim.name + " " + this.coordinates.distanceСalculation(closestVictim.coordinates));
-    }
 
     @Override
     public String getInfo() {
-        return "Разбойник " + name + " hit points: " + currentHp + " сил для атаки: " + attack + " R:" + Arrays.toString(getCoordinates());
+        return "Разбойник " + name + " hp: " + currentHp + " initiative: " + attack + " R:" + Arrays.toString(getCoordinates()) + " " + state;
     }
 }
