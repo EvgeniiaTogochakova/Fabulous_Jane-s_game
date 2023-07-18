@@ -1,14 +1,18 @@
-//Реализовать визуализацию своего проекта по примеру семинара с использованием приложенных классов.
-//Доработать степ крестьян и магов!
+//Делаем ход пехоты!
+//1. Проверяем здоровье
+//2. Ищем ближайшего врага
+//3. Двигаемся в сторну врага
+//4. Не наступаем на живых персонажей
+//5. Если расстояние до врага одна клетка бъём его!
 
-//В моей интерпретации игры маги и монахи сами решают, атаковать им или лечить в их step. Но если они решили все же лечить,
-//а лечить пока особо никого не надо в начале игры, тогда они могут и атаковать, чтобы зря не пропадал их ход. Если лечить надо,
-//действуют по-честному: лечат того соратника, который сильнее пострадал.
-//Оказалось, на поле 10*10 трудно расставить персонажей, чтобы всех было хорошо видно, если заполнять команды рандомно.
-// Некоторые игроки стоят на том же месте, что и их соратники. Правда, таких немного.
 //У меня монахи берут вторую букву названия класса - O, как и снайперы - N.
-
-
+//Маги и монахи в моей игре сами решают, атаковать им или лечить. Если выбрали лечить, а здоровье соратников пока не требует лечения,
+//тогда они атакуют. Маги еще умеют воскрешать (если павших союзников больше, чем живых). Их мана обнуляется при этом.
+//Лучники, когда стрелы заканчиваются, начинают двигаться, как пехотинцы.
+//View вывожу после step, чтобы было нагляднее.
+//Когда у магов маны меньше 5, они становятся бесполезными и для лечения, и для атаки.
+//Когда у монахов эликсира меньше 5, они бесполезны для лечения
+// . Если и яда меньше 5, то бесполезны и для атаки.
 
 import units.*;
 
@@ -24,50 +28,52 @@ public class Main {
     public static ArrayList<Unit> teamRedRose = new ArrayList<>();
     public static ArrayList<Unit> commonList = new ArrayList<>();
 
+    public static boolean isTeamDead (ArrayList<Unit> team) {
+        int deadUnits = 0;
+        for (var unit: team) {
+            if (unit.getHp() == 0) deadUnits++;
+        }
+        if (deadUnits == team.size()) return true;
+        return false;
+    }
+
     public static void main(String[] args) {
 
         for (int i = 0; i < 10; i++) {
             int digit = new Random().nextInt(7);
             switch (digit) {
                 case 0 -> {
-                    teamWhiteRose.add(new Monk(Generator.numberXWhiteRose(), Generator.numberYMonk()));
-                    teamRedRose.add(new Monk(Generator.numberXRedRose(), Generator.numberYMonk()));
+                    teamWhiteRose.add(new Monk(1, i+1));
+                    teamRedRose.add(new Monk(10, i+1));
                 }
                 case 1 -> {
-                    teamWhiteRose.add(new Magician(Generator.numberXWhiteRose(), Generator.numberYMagician()));
-                    teamRedRose.add(new Magician(Generator.numberXRedRose(), Generator.numberYMagician()));
+                    teamWhiteRose.add(new Magician(1, i+1));
+                    teamRedRose.add(new Magician(10, i+1));
                 }
                 case 2 -> {
-                    teamWhiteRose.add(new Peasant(Generator.numberXWhiteRose(), Generator.numberYPeasant()));
-                    teamRedRose.add(new Peasant(Generator.numberXRedRose(), Generator.numberYPeasant()));
+                    teamWhiteRose.add(new Peasant(Generator.numberXWhiteRose(), i+1));
+                    teamRedRose.add(new Peasant(Generator.numberXRedRose(), i+1));
                 }
                 case 3 -> {
-                    teamWhiteRose.add(new Crossbowman(Generator.numberXWhiteRose(), Generator.numberYCrossbowman()));
-                    teamRedRose.add(new Crossbowman(Generator.numberXRedRose(), Generator.numberYCrossbowman()));
+                    teamWhiteRose.add(new Crossbowman(Generator.numberXWhiteRose(), i+1));
+                    teamRedRose.add(new Crossbowman(Generator.numberXRedRose(), i+1));
                 }
                 case 4 -> {
-                    teamWhiteRose.add(new Sniper(Generator.numberXWhiteRose(), Generator.numberYSniper()));
-                    teamRedRose.add(new Sniper(Generator.numberXRedRose(), Generator.numberYSniper()));
+                    teamWhiteRose.add(new Sniper(Generator.numberXWhiteRose(), i+1));
+                    teamRedRose.add(new Sniper(Generator.numberXRedRose(), i+1));
                 }
                 case 5 -> {
-                    teamWhiteRose.add(new Spearman(Generator.numberXWhiteRose(), Generator.numberYSpearman()));
-                    teamRedRose.add(new Spearman(Generator.numberXRedRose(), Generator.numberYSpearman()));
+                    teamWhiteRose.add(new Spearman(Generator.numberXWhiteRose(), i+1));
+                    teamRedRose.add(new Spearman(Generator.numberXRedRose(), i+1));
                 }
                 case 6 -> {
-                    teamWhiteRose.add(new Robber(Generator.numberXWhiteRose(), Generator.numberYRobber()));
-                    teamRedRose.add(new Robber(Generator.numberXRedRose(), Generator.numberYRobber()));
+                    teamWhiteRose.add(new Robber(Generator.numberXWhiteRose(), i+1));
+                    teamRedRose.add(new Robber(Generator.numberXRedRose(), i+1));
                 }
             }
         }
 
-        System.out.println("_".repeat(92));
-        System.out.println("Приветствуйте составы команд! Нечетные игроки - команда WhiteRose, четные - команда RedRose: ");
-        System.out.println("_".repeat(92));
-
-        for (int i = 0; i < teamWhiteRose.size(); i++) {
-            System.out.println(teamWhiteRose.get(i).getInfo());
-            System.out.println(teamRedRose.get(i).getInfo());
-        }
+        System.out.println("Нечетные игроки (Green Side) - команда WhiteRose, четные (Blue Side)- команда RedRose: ");
 
         commonList.addAll(teamWhiteRose);
         commonList.addAll(teamRedRose);
@@ -76,16 +82,24 @@ public class Main {
         Scanner in = new Scanner(System.in);
         View.view();
         in.nextLine();
-        System.out.println("_".repeat(63));
-        System.out.println("Вывожу step персонажей в порядке убывания объема атакующих сил");
-        System.out.println("_".repeat(63));
-        commonList.forEach(n -> {
-            String[] strings = n.getInfo().split(" ");
-            System.out.print(strings[0] + " " + strings[1] + " делает ход: ");
-            if (teamWhiteRose.contains(n)) n.step(teamRedRose, teamWhiteRose);
-            if (teamRedRose.contains(n)) n.step(teamWhiteRose, teamRedRose);
-        });
+        while (true) {
+            for (var unit : commonList) {
+                if (teamWhiteRose.contains(unit)) unit.step(teamRedRose, teamWhiteRose);
+                if (teamRedRose.contains(unit)) unit.step(teamWhiteRose, teamRedRose);
+            }
 
+            View.view();
+            in.nextLine();
+            if (isTeamDead(teamWhiteRose)) {
+                System.out.println("Команда RedRose(Blue) выиграла");
+                break;
+            }
+
+            if (isTeamDead(teamRedRose)) {
+                System.out.println("Команда WhiteRose(Green) выиграла");
+                break;
+            }
+        }
 
     }
 
